@@ -132,6 +132,10 @@ class UI:
         args_display = f" {Colors.DIM}({args[:50]}...){Colors.ENDC}" if args and len(args) > 0 else ""
         print(f"  {Colors.YELLOW}⚡{Colors.ENDC} {tool_name}{args_display}")
     
+    def print_tool_detail(self, detail: str):
+        """Print a dim, indented detail line under a tool run."""
+        print(f"    {Colors.DIM}🔍{detail}{Colors.ENDC}")
+    
     def print_answer(self, answer: str):
         """Print the final answer in a beautiful box."""
         width = 80
@@ -182,4 +186,3 @@ class UI:
     def print_warning(self, message: str):
         """Print a warning message."""
         print(f"{Colors.YELLOW}⚠ Warning:{Colors.ENDC} {message}")
-

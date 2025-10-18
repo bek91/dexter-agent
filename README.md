@@ -1,22 +1,20 @@
-# Dexter 🤖
+# ob 🤖
 
-Dexter is an autonomous financial research agent that thinks, plans, and learns as it works. It performs analysis using task planning, self-reflection, and real-time market data. Think Claude Code, but built specifically for financial research.
+ob is an autonomous organizational insights agent that thinks, plans, and learns as it works. It performs analysis using task planning, self‑reflection, and knowledge‑graph search. Think Claude Code, but focused on organizational knowledge and discovery.
 
-
-<img width="979" height="651" alt="Screenshot 2025-10-14 at 6 12 35 PM" src="https://github.com/user-attachments/assets/5a2859d4-53cf-4638-998a-15cef3c98038" />
 
 ## Overview
 
-Dexter takes complex financial questions and turns them into clear, step-by-step research plans. It runs those tasks using live market data, checks its own work, and refines the results until it has a confident, data-backed answer.  
+ob turns complex organizational questions into clear, step‑by‑step research plans. It runs those tasks using tools (like a knowledge‑graph search), checks its own work, and refines the results until it has a confident, data‑backed answer.
 
-It’s not just another chatbot.  It’s an agent that plans ahead, verifies its progress, and keeps iterating until the job is done.
+It’s not just another chatbot. It plans ahead, verifies progress, and iterates until the job is done.
 
 **Key Capabilities:**
-- **Intelligent Task Planning**: Automatically decomposes complex queries into structured research steps
-- **Autonomous Execution**: Selects and executes the right tools to gather financial data
-- **Self-Validation**: Checks its own work and iterates until tasks are complete
-- **Real-Time Financial Data**: Access to income statements, balance sheets, and cash flow statements
-- **Safety Features**: Built-in loop detection and step limits to prevent runaway execution
+- **Intelligent Task Planning**: Decomposes complex queries into structured research steps
+- **Autonomous Tool Use**: Selects and executes the right tools (Graphiti search)
+- **Self‑Validation**: Checks its own work and iterates until tasks are complete
+- **Knowledge Graph Search**: Query across nodes/edges/communities with strategies like RRF/MMR
+- **Safety Features**: Loop detection and step limits to prevent runaway execution
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/virattt?style=social)](https://twitter.com/virattt)
 
@@ -27,90 +25,100 @@ It’s not just another chatbot.  It’s an agent that plans ahead, verifies its
 - Python 3.10 or higher
 - [uv](https://github.com/astral-sh/uv) package manager
 - OpenAI API key
-- Financial Datasets API key (get one at [financialdatasets.ai](https://financialdatasets.ai))
+- Optional: Graphiti local API key and group IDs (for knowledge‑graph search)
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/virattt/dexter.git
-cd dexter
-```
-
-2. Install dependencies with uv:
+1. Install dependencies with uv:
 ```bash
 uv sync
 ```
 
-3. Set up your environment variables:
+2. Set up your environment variables:
 ```bash
 # Copy the example environment file
 cp env.example .env
 
-# Edit .env and add your API keys
+# Edit .env and add your keys (examples)
 # OPENAI_API_KEY=your-openai-api-key
-# FINANCIAL_DATASETS_API_KEY=your-financial-datasets-api-key
+# GRAPHITI_API_KEY=your-graphiti-api-key
+# GROUP_ID=group-1,group-2
+# OB_LLM_MODEL=gpt-4o
+# OB_ANSWER_LLM_MODEL=gpt-5-mini
+# OB_MAX_STEPS=20
+# OB_MAX_STEPS_PER_TASK=5
 ```
 
 ### Usage
 
-Run Dexter in interactive mode:
+Run ob in interactive mode:
 ```bash
-uv run dexter-agent
+uv run agent-ob
 ```
 
 ### Example Queries
 
-Try asking Dexter questions like:
-- "What was Apple's revenue growth over the last 4 quarters?"
-- "Compare Microsoft and Google's operating margins for 2023"
-- "Analyze Tesla's cash flow trends over the past year"
-- "What is Amazon's debt-to-equity ratio based on recent financials?"
+Try asking ob questions like:
+- "What meetings related to growth happened in the last 2 weeks?"
+- "Who owns TikTok marketing and what’s the current strategy?"
+- "Summarize the latest docs about our pricing changes."
+- "Find contradictions between our product usage notes and dashboard metrics."
 
-Dexter will automatically:
+ob will automatically:
 1. Break down your question into research tasks
-2. Fetch the necessary financial data
-3. Perform calculations and analysis
-4. Provide a comprehensive, data-rich answer
+2. Use tools (e.g., Graphiti search) to gather data
+3. Validate if each task is sufficiently answered
+4. Provide a concise, data‑rich final answer
 
 ## Architecture
 
-Dexter uses a multi-agent architecture with specialized components:
+ob follows a multi‑phase agent loop with specialized prompts:
 
-- **Planning Agent**: Analyzes queries and creates structured task lists
-- **Action Agent**: Selects appropriate tools and executes research steps
-- **Validation Agent**: Verifies task completion and data sufficiency
-- **Answer Agent**: Synthesizes findings into comprehensive responses
+- **Planning**: Analyze the query and produce a structured task list
+- **Action**: Select and execute tools to make progress
+- **Validation**: Decide if the task is sufficiently complete
+- **Answering**: Synthesize a concise, data‑backed response
 
 ## Project Structure
 
 ```
-dexter/
+ob/
 ├── src/
-│   ├── dexter/
+│   ├── ob/
 │   │   ├── agent.py      # Main agent orchestration logic
-│   │   ├── model.py      # LLM interface
-│   │   ├── tools.py      # Financial data tools
-│   │   ├── prompts.py    # System prompts for each component
-│   │   ├── schemas.py    # Pydantic models
-│   │   ├── utils/        # Utility functions
-│   │   └── cli.py        # CLI entry point
+│   │   ├── model.py      # LLM interface + prompt assembly
+│   │   ├── tools.py      # LangChain tools (Graphiti search)
+│   │   ├── graphiti.py   # HTTP adapter for knowledge-graph API
+│   │   ├── prompts.py    # System prompts for each phase
+│   │   ├── schemas.py    # Pydantic models for structured IO
+│   │   ├── utils/        # UI, logger, and intro banner
+│   │   └── cli.py        # CLI entry point (interactive REPL)
 ├── pyproject.toml
 └── uv.lock
 ```
 
 ## Configuration
 
-Dexter supports configuration via the `Agent` class initialization:
+Configure via both the `Agent` constructor and environment variables.
 
 ```python
-from dexter.agent import Agent
+from ob.agent import Agent
 
 agent = Agent(
     max_steps=20,              # Global safety limit
     max_steps_per_task=5       # Per-task iteration limit
 )
 ```
+
+Environment variables (see `env.example`):
+- `OPENAI_API_KEY` (required)
+- `GRAPHITI_API_KEY` (optional; local Graphiti API key)
+- `GROUP_ID` (optional; single or comma‑separated default group IDs)
+- `OB_LLM_MODEL` (default: `gpt-4o`)
+- `OB_ANSWER_LLM_MODEL` (default: `gpt-5-mini`)
+- `OB_MAX_STEPS`, `OB_MAX_STEPS_PER_TASK` (guardrails)
+
+Graphiti backend defaults to `http://127.0.0.1:8000` (see `src/ob/graphiti.py`). Change in code if your API runs elsewhere.
 
 ## How to Contribute
 
@@ -120,10 +128,9 @@ agent = Agent(
 4. Push to the branch
 5. Create a Pull Request
 
-**Important**: Please keep your pull requests small and focused.  This will make it easier to review and merge.
+**Important**: Please keep your pull requests small and focused. This makes review and merge easier.
 
 
 ## License
 
 This project is licensed under the MIT License.
-

@@ -2,21 +2,21 @@ from typing import List
 
 from langchain_core.messages import AIMessage
 
-from dexter.model import call_llm
-from dexter.prompts import (
+from ob.model import call_llm
+from ob.prompts import (
     ACTION_SYSTEM_PROMPT,
     ANSWER_SYSTEM_PROMPT,
     PLANNING_SYSTEM_PROMPT,
     VALIDATION_SYSTEM_PROMPT,
 )
-from dexter.schemas import Answer, IsDone, Task, TaskList
-from dexter.tools import TOOLS
-from dexter.utils.logger import Logger
-from dexter.utils.ui import show_progress
+from ob.schemas import Answer, IsDone, Task, TaskList
+from ob.tools import TOOLS
+from ob.utils.logger import Logger
+from ob.utils.ui import show_progress
 
 
 class Agent:
-    def __init__(self, max_steps: int = 20, max_steps_per_task: int = 5):
+    def __init__(self, max_steps: int = 10, max_steps_per_task: int = 3):
         self.logger = Logger()
         self.max_steps = max_steps            # global safety cap
         self.max_steps_per_task = max_steps_per_task
@@ -150,6 +150,11 @@ class Agent:
                         try:
                             result = self._execute_tool(tool_to_run, tool_name, inp_args)
                             self.logger.log_tool_run(tool_name, f"{result}")
+                            # For advanced_search, show query and strategy details beneath the tool line
+                            if tool_name == "advanced_search":
+                                q = inp_args.get("query", "")
+                                strat = inp_args.get("strategy", "RRF")
+                                self.logger.log_tool_detail(f"query: '{q}'    strategy: {strat}")
                             session_outputs.append(f"Output of {tool_name} with args {inp_args}: {result}")
                         except Exception as e:
                             self.logger._log(f"Tool execution failed: {e}")

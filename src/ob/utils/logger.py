@@ -1,4 +1,4 @@
-from dexter.utils.ui import UI
+from ob.utils.ui import UI
 
 
 class Logger:
@@ -27,6 +27,9 @@ class Logger:
 
     def log_tool_run(self, tool: str, result: str = ""):
         self.ui.print_tool_run(tool, str(result)[:100])
+    
+    def log_tool_detail(self, detail: str):
+        self.ui.print_tool_detail(detail)
 
     def log_risky(self, tool: str, input_str: str):
         self.ui.print_warning(f"Risky action {tool}({input_str}) — auto-confirmed")
